@@ -36,13 +36,49 @@
 仓库已提供Etcd的生成代码, 如要自己根据proto文件生成代码, 请使用`tools`目录下的生成工具`generator`, 使用方法和`protocal`命令完全一样, 增强了支持以目录作为参数, 自动查找目录下的proto文件生成, 如: 该目录下已提供的`grpc`生成代码脚本:
 
 ```shell
+
+
+git clone git@gitlab......tech:smi2/proto-repo-java.git
+git clone git@github.com:smi2/swoole-grpc.git
+git clone https://github.com/grpc/grpc.git
+
+
+#need check 
+ls grpc/bins/opt/grpc_php_plugin
+
+# https://github.com/grpc/grpc/tree/master/src/php
+
+
+mkdir swoole-grpc/output
+mkdir swoole-grpc/output/proto
+mkdir swoole-grpc/output/result
+
+cp proto-repo-java/src/main/proto/*.proto swoole-grpc/output/proto
+
+
+ls swoole-grpc/output/proto
+cd swoole-grpc/tools/
+
+```
+
+Generate:
+
+
+```
 # it's generate_grpc.sh
+
 ./generator \
---proto_path=./../src/Grpc/Proto \
---php_out=./../src/Grpc \
---grpc_out=./../src/Grpc \
---plugin=protoc-gen-grpc=$1 \
-./../src/Grpc/Proto
+--proto_path=./../output/proto \
+--php_out=./../output/result \
+--grpc_out=./../output/result \
+--plugin=protoc-gen-grpc=../../grpc/bins/opt/grpc_php_plugin \
+./../output/proto
+
+
+
+```
+
+
 ```
 
 只需要将proto文件放在`Grpc/Proto`下, 运行`./generate_grpc.sh ../../grpc/bins/opt/grpc_php_plugin` (参数是你的grpc php插件位置, 一般在`grpc/bins/opt`目录中), 即可生成相关代码
