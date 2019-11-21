@@ -41,10 +41,19 @@ class BaseStub extends VirtualClient
         array $metadata = [],
         array $options = []
     ) {
+
         $request = new \swoole_http2_request;
         $request->method = 'POST';
         $request->path = $method;
         $request->data = Parser::serializeMessage($argument);
+        $request->headers = [
+            "user-agent" => 'grpc-swoole/7.0.0 (linux; chttp2; gale)',
+            "content-type" => "application/grpc",
+            "grpc-accept-encoding" => "identity,deflate,gzip",
+            "accept-encoding" => "identity,gzip",
+            "te" => "trailers",
+        ];
+        $request->pipeline = false;
 
         $streamId = $this->send($request);
 
