@@ -125,6 +125,7 @@ class Client
 
         $default_opts = [
             'timeout' => GRPC_DEFAULT_TIMEOUT,
+//            'socket_send_timeout' => GRPC_DEFAULT_TIMEOUT,
             'send_yield' => false,
             'ssl' => false,
             'ssl_host_name' => ''
@@ -181,7 +182,6 @@ class Client
                         var_dump($this->client->errMsg);
                     }
                 }
-
                 if ($response !== false) {
 
                     // force close
@@ -214,11 +214,13 @@ class Client
                     }// else discard it
 
                 } else {
-
-                    // false response
-                    if (!$this->client->connected) {
+                    // fix bug, if server shutdown without drop connection : $this->client->connected = true
+                    // send ping() - and client fetch errCode if connection lost
+                    $this->client->ping();
+                    // if ping false response
+                    if (!$this->client->connected || $this->client->errCode) {
                         _close:
-
+                        // Close connections to gRPC server ;)
                         // if you want to close it or retry connect failed, stop recv loop
                         if ($this->waitStatus) {
                             $need_kill = true;
